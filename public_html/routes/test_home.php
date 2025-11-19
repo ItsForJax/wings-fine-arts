@@ -47,7 +47,10 @@
   <section class="pt-5">
     <div class="max-w-7xl mx-auto px-6">
       <div class="relative rounded-2xl overflow-hidden shadow-2xl">
-        <div class="absolute inset-0" style="background-image: url('https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center;"></div>
+        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover" poster="https://fallback-image.jpg">
+          <source src="assets/videos/bg-plane.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/20 to-slate-900/80"></div>
         <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 items-center p-10 md:p-16">
           <div class="space-y-6">
