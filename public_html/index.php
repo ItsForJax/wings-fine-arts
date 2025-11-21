@@ -11,7 +11,7 @@ switch ($request) {
     case 'test':
         require 'routes/test.php';
         break;
-    case 'testhome':
+    case 'landing-page':
         require 'routes/test_home.php';
         break;
     default:
