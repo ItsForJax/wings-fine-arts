@@ -15,7 +15,7 @@
   <header id="siteHeader" class="sticky top-0 z-50 bg-transparent transition-transform duration-300">
     <div class="max-w-7xl mx-auto px-6 py-0 flex items-center justify-between">
       <a href="#" class="flex items-center gap-3">
-        <img src="https://www.wings-fine-arts.com/cdn/shop/files/Wings_gold_600x.png?v=1613680317" class="w-24 h-24 object-contain" alt="Wings Fine Arts logo" />
+        <img src="assets/images/Wings_gold.avif" class="w-24 h-24 object-contain" alt="Wings Fine Arts logo" />
       </a>
 
       <nav class="hidden md:flex items-center gap-6">
@@ -44,7 +44,7 @@
   </header>
 
   <!-- HERO -->
-  <section class="pt-5">
+  <section>
     <div class="max-w-7xl mx-auto px-6">
       <div class="relative rounded-2xl overflow-hidden shadow-2xl">
         <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover" poster="https://fallback-image.jpg">
