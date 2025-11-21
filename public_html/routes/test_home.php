@@ -1,4 +1,23 @@
 <!doctype html>
+<?php
+
+require "api/getProduct.php";
+
+$ecwid = new Ecwid();
+
+// get first 60 products
+$json = $ecwid->getProducts(1, 4);
+$data = json_decode($json, true);
+
+// if error, show it
+if (!isset($data["items"])) {
+    echo "<pre>";
+    print_r($data);
+    echo "</pre>";
+    exit;
+}
+
+?>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -19,7 +38,7 @@
       </a>
 
       <nav class="hidden md:flex items-center gap-6">
-        <a href="#collection" class="text-slate-200/80 hover:text-white transition">Collection</a>
+        <a href="#featured" class="text-slate-200/80 hover:text-white transition">Featured</a>
         <a href="#artists" class="text-slate-200/80 hover:text-white transition">Artists</a>
         <a href="#about" class="text-slate-200/80 hover:text-white transition">About</a>
         <a href="#" class="px-4 py-2 rounded-md bg-slate-800/60 hover:bg-slate-700 transition">Contact</a>
@@ -46,48 +65,84 @@
   <!-- HERO -->
   <section>
     <div class="max-w-7xl mx-auto px-6">
-      <div class="relative rounded-2xl overflow-hidden shadow-2xl">
-        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover" poster="https://fallback-image.jpg">
+      <div class="relative rounded-2xl overflow-hidden shadow-2xl min-h-[calc(100vh-150px)] flex items-center">
+
+        <!-- IMAGE (shows immediately) -->
+        <img 
+          id="hero-image"
+          src="assets/images/AlmostHome-RobTaylor-L_540x.webp" 
+          alt="Background" 
+          class="absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-700"
+        />
+
+        <!-- VIDEO (hidden at first) -->
+        <video 
+          id="hero-video"
+          autoplay 
+          loop 
+          muted 
+          playsinline
+          class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
+        >
           <source src="assets/videos/bg-plane.mp4" type="video/mp4">
-            Your browser does not support the video tag.
         </video>
+
         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/20 to-slate-900/80"></div>
+
         <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 items-center p-10 md:p-16">
           <div class="space-y-6">
-            <span class="inline-block px-3 py-1 rounded-full bg-indigo-600/80 text-xs font-medium">Limited Editions</span>
+            <span class="inline-block px-3 py-1 rounded-full bg-indigo-600/80 text-xs font-medium">Wings Fine Arts</span>
             <h1 class="text-4xl md:text-5xl font-bold leading-tight">Aviation Art & Prints — Elevate your space with the spirit of flight</h1>
             <p class="text-slate-200/80 max-w-xl">Original illustrations, archival prints, and framed artworks inspired by historic aircraft, modern jets, and aerial photography. Hand-picked by pilots and collectors.</p>
+
             <div class="flex gap-3">
               <a href="#collection" class="px-6 py-3 rounded-lg bg-sky-500 hover:bg-sky-400 transition font-semibold">Shop Collection</a>
               <a href="#about" class="px-6 py-3 rounded-lg border border-slate-600 hover:bg-slate-800 transition">Learn More</a>
             </div>
           </div>
+
           <div class="hidden md:flex justify-end">
-            <div class="w-full max-w-md rounded-xl card-grad p-4 glass backdrop-blur-sm">
-              <div class="flex items-start gap-4">
-                <img src="https://placehold.co/400x300?text=Aviation+Art" alt="featured" class="w-28 h-28 object-cover rounded-lg shadow" />
-                <div class="flex-1">
-                  <h3 class="font-semibold">Spitfire No. 22 — Archival Print</h3>
-                  <p class="text-sm text-slate-300/80">Signed limited edition, 18x24 in, archival paper.</p>
-                  <div class="mt-3 flex items-center justify-between">
-                    <div class="font-bold">$220</div>
-                    <a href="#" class="text-xs px-3 py-2 rounded-md bg-slate-700/50">Add to cart</a>
+             <?php
+                // Image (400px)
+                $item = $data["items"][0];
+                $img = $item["media"]["images"][0]["image160pxUrl"] ?? null;
+                $alt = $item["images"][0]["alt"] ?? "";
+
+                // Details
+                $name = $item["name"] ?? "";
+                $price = $item["price"] ?? 0;
+                $stock = ($item["inStock"] ?? false) ? "In Stock" : "Out of Stock";
+                $url = $item["url"] ?? "#";
+              ?>
+            <a class="block" href="<?= $url ?>" target="_blank">
+              <div class="w-full max-w-md rounded-xl card-grad p-4 glass backdrop-blur-sm">
+                <div class="flex items-start gap-4">
+                  <img src="<?= $img ?>" alt="<?= htmlspecialchars($alt) ?>" class="w-28 h-28 object-cover rounded-lg shadow" />
+                  <div class="flex-1">
+                    <h3 class="font-semibold"><?= htmlspecialchars($name) ?></h3>
+                    <p class="text-sm text-slate-300/80">No Description</p>
+                    <div class="mt-3 flex items-center justify-between">
+                      <div class="font-bold">$<?= number_format($price, 2) ?></div>
+                      <a href="#" class="text-xs px-3 py-2 rounded-md bg-slate-700/50">Add to cart</a>
+                    </div>
                   </div>
                 </div>
+                <div class="mt-4 text-xs text-slate-400">Free shipping over $150 • 30-day returns</div>
               </div>
-              <div class="mt-4 text-xs text-slate-400">Free shipping over $150 • 30-day returns</div>
-            </div>
+            </a>
           </div>
+
         </div>
       </div>
     </div>
   </section>
 
+
   <!-- MAIN GRID -->
   <main class="max-w-7xl mx-auto px-6 mt-12">
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
       <!-- SIDEBAR -->
-      <aside class="lg:col-span-1">
+      <!-- <aside class="lg:col-span-1">
         <div class="bg-[#071020] p-5 rounded-2xl shadow-lg glass">
           <h4 class="font-semibold mb-3">Filters</h4>
           <details class="mb-3">
@@ -123,80 +178,67 @@
           <h6 class="font-medium mb-2">Why Wings Fine Arts?</h6>
           <p class="text-xs">Curated aviation art, museum-quality printing, and fast secure shipping worldwide. Support independent aviation artists.</p>
         </div>
-      </aside>
+      </aside> -->
 
       <!-- PRODUCT AREA -->
-      <section id="collection" class="lg:col-span-3">
+      <section id="featured" class="lg:col-span-4">
         <div class="flex items-center justify-between mb-6">
-          <div>
+          <div class="w-full text-center">
             <h2 class="text-2xl font-bold">Featured Collection</h2>
             <p class="text-sm text-slate-400">New arrivals & popular prints</p>
           </div>
-          <div class="flex items-center gap-3">
+          <!-- <div class="flex items-center gap-3">
             <label class="text-sm text-slate-300/80">Sort</label>
             <select class="rounded-md bg-transparent border border-slate-700 px-3 py-2 text-sm">
               <option>Popular</option>
               <option>Newest</option>
               <option>Price: Low to High</option>
             </select>
-          </div>
+          </div> -->
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Card 1 -->
-          <article class="rounded-2xl card-grad shadow-lg overflow-hidden group">
-            <div class="w-full aspect-[4/3] bg-slate-900 overflow-hidden group">
-              <img src="https://placehold.co/800x600?text=Aviation+Art" class="w-full h-full object-cover group-hover:object-contain transition-all duration-500" />
-            </div>
-            <div class="p-4 space-y-2">
-              <h3 class="font-semibold">Artwork 1</h3>
-              <p class="text-xs text-slate-400">Description</p>
-              <div class="flex items-center justify-between">
-                <div class="font-bold">$145</div>
-                <button class="px-3 py-2 rounded-md bg-sky-500 hover:bg-sky-400 font-semibold text-sm">Add to cart</button>
-              </div>
-            </div>
-          </article>
+          <?php foreach ($data["items"] as $item): ?>
+            <?php
+                // Image (400px)
+                $img = $item["media"]["images"][0]["image160pxUrl"] ?? null;
+                $alt = $item["images"][0]["alt"] ?? "";
 
-          <!-- Card 2 -->
-          <article class="rounded-2xl card-grad shadow-lg overflow-hidden group">
-            <div class="w-full aspect-[4/3] bg-slate-900 overflow-hidden group">
-              <img src="https://placehold.co/800x600?text=Aviation+Art" class="w-full h-full object-cover group-hover:object-contain transition-all duration-500" />
-            </div>
-            <div class="p-4 space-y-2">
-              <h3 class="font-semibold">Artwork 2</h3>
-              <p class="text-xs text-slate-400">Description</p>
-              <div class="flex items-center justify-between">
-                <div class="font-bold">$220</div>
-                <button class="px-3 py-2 rounded-md bg-sky-500 hover:bg-sky-400 font-semibold text-sm">Add to cart</button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 3 -->
-          <article class="rounded-2xl card-grad shadow-lg overflow-hidden group">
-            <div class="w-full aspect-[4/3] bg-slate-900 overflow-hidden group">
-              <img src="https://placehold.co/800x600?text=Aviation+Art" class="w-full h-full object-cover group-hover:object-contain transition-all duration-500" />
-            </div>
-            <div class="p-4 space-y-2">
-              <h3 class="font-semibold">Artwork 3</h3>
-              <p class="text-xs text-slate-400">Description</p>
-              <div class="flex items-center justify-between">
-                <div class="font-bold">$180</div>
-                <button class="px-3 py-2 rounded-md bg-sky-500 hover:bg-sky-400 font-semibold text-sm">Add to cart</button>
-              </div>
-            </div>
-          </article>
+                // Details
+                $name = $item["name"] ?? "";
+                $price = $item["price"] ?? 0;
+                $stock = ($item["inStock"] ?? false) ? "In Stock" : "Out of Stock";
+                $url = $item["url"] ?? "#";
+            ?>
+            <article class="rounded-2xl card-grad shadow-lg overflow-hidden group">
+              <a class="block" href="<?= $url ?>" target="_blank">
+                <div class="w-full aspect-[4/3] bg-slate-900 overflow-hidden group">
+                    <?php if ($img): ?>
+                        <img src="<?= $img ?>" alt="<?= htmlspecialchars($alt) ?>" class="w-full h-full object-cover group-hover:object-contain transition-all duration-500">
+                    <?php endif; ?>
+                </div>
+                <div class="p-4 space-y-2">
+                  <h3 class="font-semibold"><?= htmlspecialchars($name) ?></h3>
+                  <p class="text-xs text-slate-400">No Description</p>
+                  <div class="flex items-center justify-between">
+                    <div class="font-bold">$<?= number_format($price, 2) ?></div>
+                    <button class="px-3 py-2 rounded-md bg-sky-500 hover:bg-sky-400 font-semibold text-sm">Add to cart</button>
+                  </div>
+                </div>
+              </a>
+            </article>
+          <?php endforeach; ?>
         </div>
 
-        <div class="mt-8 flex justify-center">
+        <!-- <div class="mt-8 flex justify-center">
           <button class="px-5 py-3 rounded-full border border-slate-700">Load more</button>
-        </div>
+        </div> -->
       </section>
     </div>
   </main>
 
-  <footer class="mt-20 border-t border-slate-800 pt-12 pb-16 text-center">
+  <footer class="mt-20 border-t border-slate-800 pt-5 pb-5 text-center">
     <p class="text-slate-500 text-xs">© <span id="year"></span> Wings Fine Arts — All rights reserved</p>
   </footer>
 
@@ -213,5 +255,20 @@
       lastScroll = current;
     });
   </script>
+
+  <script>
+  const video = document.getElementById('hero-video');
+  const image = document.getElementById('hero-image');
+
+  video.addEventListener('loadeddata', () => {
+    // fade in the video
+    video.classList.remove('opacity-0');
+    
+    // fade out the image once video is visible
+    setTimeout(() => {
+      image.classList.add('opacity-0');
+    }, 300);
+  });
+</script>
 </body>
 </html>
